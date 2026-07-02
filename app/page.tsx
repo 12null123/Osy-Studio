@@ -1766,14 +1766,13 @@ export default function Home() {
                               {m.content ? (
                                 <ReactMarkdown
                                   components={{
-                                    p: ({ children }) => <p className="mb-4 leading-relaxed text-neutral-300 font-medium tracking-tight">{children}</p>,
+                                    p: ({ children }) => <p className="mb-3 last:mb-0 leading-relaxed text-[14px] text-zinc-100">{children}</p>,
                                     ol: ({ children }) => <ol className="list-decimal pl-6 mb-4 space-y-1.5 text-neutral-300 font-medium">{children}</ol>,
                                     ul: ({ children }) => <ul className="list-disc pl-6 mb-4 space-y-1.5 text-neutral-300 font-medium">{children}</ul>,
                                     li: ({ children }) => <li className="text-neutral-300 mb-1 leading-relaxed">{children}</li>,
                                     h1: ({ children }) => <h1 className="text-lg font-bold mt-6 mb-2.5 text-white tracking-tight">{children}</h1>,
                                     h2: ({ children }) => <h2 className="text-md font-bold mt-5 mb-2 text-white tracking-tight">{children}</h2>,
                                     h3: ({ children }) => <h3 className="text-sm font-semibold mt-4 mb-1 text-white tracking-tight">{children}</h3>,
-                                    p: ({children}) => <p className="mb-3 last:mb-0 leading-relaxed text-[14px] text-zinc-100">{children}</p>,
                                     pre: ({children}) => <div className="max-w-full my-4 overflow-x-auto">{children}</div>,
                                     a: ({ href, children }) => (
                                       <a href={href} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-350 hover:underline inline-flex items-center gap-0.5 font-bold transition-colors">
