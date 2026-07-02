@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { getStorageManager, StorageKey, AIProvider } from "@/lib/secure-storage/manager";
+import { PROVIDER_CONFIG } from "@/types/ai";
 import {
   Plus,
   MessageSquare,
@@ -1218,102 +1219,231 @@ export default function Home() {
             
             {/* Model Display Selector */}
             <div className="relative">
-              <div 
-                onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
-                className="flex items-center gap-2 bg-white/[0.015] hover:bg-white/[0.04] px-3.5 py-1.5 rounded-full border border-white/[0.03] text-[11px] font-semibold tracking-wide text-zinc-300 hover:text-white cursor-pointer transition-all duration-200 active:scale-95"
-              >
-                <GeminiSpark className="w-3.5 h-3.5" active={isStreaming} />
-                <span>{getActiveModelName()}</span>
-                <ChevronDown size={11} className="text-zinc-500 ml-0.5" />
-              </div>
+              {(() => {
+                const hasKey = 
+                  activeProvider === 'google' ? clientApiKey : 
+                  activeProvider === 'anthropic' ? clientAnthropicKey : 
+                  clientOpenaiKey;
+                
+                // Static classes based on provider and key status
+                const getBaseClasses = () => {
+                  const base = 'flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-[11px] font-semibold tracking-wide cursor-pointer transition-all duration-200 active:scale-95';
+                  
+                  if (!hasKey) {
+                    return `${base} bg-red-500/5 hover:bg-red-500/10 border-red-500/20 text-red-400 hover:text-red-300`;
+                  }
+                  
+                  if (activeProvider === 'google') {
+                    return `${base} bg-indigo-500/5 hover:bg-indigo-500/10 border-indigo-500/20 text-indigo-300 hover:text-indigo-200`;
+                  } else if (activeProvider === 'anthropic') {
+                    return `${base} bg-amber-500/5 hover:bg-amber-500/10 border-amber-500/20 text-amber-300 hover:text-amber-200`;
+                  } else {
+                    return `${base} bg-emerald-500/5 hover:bg-emerald-500/10 border-emerald-500/20 text-emerald-300 hover:text-emerald-200`;
+                  }
+                };
+
+                const getStatusDotClasses = () => {
+                  if (!hasKey) return 'bg-red-500';
+                  if (activeProvider === 'google') return 'bg-indigo-400';
+                  if (activeProvider === 'anthropic') return 'bg-amber-400';
+                  return 'bg-emerald-400';
+                };
+                
+                return (
+                  <div 
+                    onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+                    className={getBaseClasses()}
+                  >
+                    <GeminiSpark className="w-3.5 h-3.5" active={isStreaming} />
+                    <span>{getActiveModelName()}</span>
+                    <div className={`w-1.5 h-1.5 rounded-full ${getStatusDotClasses()}`} />
+                    <ChevronDown size={11} className="text-zinc-500 ml-0.5" />
+                  </div>
+                );
+              })()}
+              
 
               {isModelDropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setIsModelDropdownOpen(false)} />
-                  <div className="absolute left-0 mt-2 w-56 rounded-2xl border border-white/[0.04] bg-[#0c0c0e]/95 backdrop-blur-xl p-2.5 shadow-2xl z-40 select-none animate-scale-up">
-                    <div className="px-2.5 py-1.5 text-[10px] font-bold text-zinc-500 uppercase tracking-widest border-b border-white/[0.02] mb-1.5">
-                      Select AI Intelligence
+                  <div className="absolute left-0 mt-2 w-80 rounded-2xl border border-white/[0.04] bg-[#0c0c0e]/95 backdrop-blur-xl p-3 shadow-2xl z-40 select-none animate-scale-up">
+                    {/* Header */}
+                    <div className="px-2 py-2 mb-2">
+                      <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">AI Models</h3>
                     </div>
+
+                    {/* Providers Section */}
+                    <div className="space-y-2 mb-3 pb-3 border-b border-white/[0.02]">
+                      {(['google', 'anthropic', 'openai'] as const).map((provider) => {
+                        const config = PROVIDER_CONFIG[provider];
+                        const hasKey = 
+                          provider === 'google' ? clientApiKey : 
+                          provider === 'anthropic' ? clientAnthropicKey : 
+                          clientOpenaiKey;
+                        const isActive = activeProvider === provider;
+                        
+                        // Get static classes based on provider
+                        const getProviderClasses = () => {
+                          const base = 'px-3 py-2.5 rounded-xl border transition-all cursor-pointer';
+                          const disabledClass = !hasKey ? 'opacity-50 cursor-not-allowed' : '';
+                          
+                          if (provider === 'google') {
+                            return `${base} ${isActive ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04]'} ${disabledClass}`;
+                          } else if (provider === 'anthropic') {
+                            return `${base} ${isActive ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04]'} ${disabledClass}`;
+                          } else {
+                            return `${base} ${isActive ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04]'} ${disabledClass}`;
+                          }
+                        };
+
+                        const getDotAndTextClasses = () => {
+                          if (provider === 'google') {
+                            return {
+                              dot: 'bg-indigo-500',
+                              text: isActive ? 'text-indigo-300' : 'text-zinc-300'
+                            };
+                          } else if (provider === 'anthropic') {
+                            return {
+                              dot: 'bg-amber-500',
+                              text: isActive ? 'text-amber-300' : 'text-zinc-300'
+                            };
+                          } else {
+                            return {
+                              dot: 'bg-emerald-500',
+                              text: isActive ? 'text-emerald-300' : 'text-zinc-300'
+                            };
+                          }
+                        };
+                        
+                        const classes = getDotAndTextClasses();
+                        
+                        return (
+                          <div 
+                            key={provider}
+                            onClick={() => {
+                              if (hasKey) {
+                                setActiveProvider(provider);
+                                const firstModel = config.models[0];
+                                setActiveModelId(firstModel.id);
+                                if (firstModel.supportsThinking) {
+                                  setUseThinking(false);
+                                }
+                              }
+                            }}
+                            className={getProviderClasses()}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <div className={`w-1.5 h-1.5 rounded-full ${classes.dot}`} />
+                                  <span className={`text-xs font-semibold ${classes.text}`}>
+                                    {config.name}
+                                  </span>
+                                  {hasKey ? (
+                                    <div className="flex items-center gap-1 ml-auto">
+                                      <div className="w-1 h-1 rounded-full bg-green-500" />
+                                      <span className="text-[9px] text-green-600 font-mono">KEY</span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1 ml-auto">
+                                      <div className="w-1 h-1 rounded-full bg-red-500" />
+                                      <span className="text-[9px] text-red-600 font-mono">SETUP</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-zinc-500">{config.description}</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Models Section for Active Provider */}
                     <div className="space-y-1">
-                      <button
-                        onClick={() => {
-                          setActiveProvider("google");
-                          setActiveModelId("gemini-3.5-flash");
-                          setUseThinking(false);
-                          setIsModelDropdownOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                          activeProvider === "google" && !useThinking
-                            ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/10"
-                            : "text-zinc-400 hover:text-white hover:bg-white/[0.02] border border-transparent"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${activeProvider === "google" && !useThinking ? "bg-indigo-400" : "bg-transparent"}`} />
-                          <span>Gemini 3.5 Flash</span>
-                        </div>
-                        <span className="text-[9px] text-zinc-600 font-mono">GOOGLE</span>
-                      </button>
+                      <div className="px-2 py-1 text-[9px] font-bold text-zinc-600 uppercase tracking-widest">
+                        Models
+                      </div>
+                      {PROVIDER_CONFIG[activeProvider].models.map((model) => {
+                        const isSelected = 
+                          activeProvider === model.provider && 
+                          activeModelId === model.id &&
+                          (model.supportsThinking ? useThinking : !useThinking);
 
-                      <button
-                        onClick={() => {
-                          setActiveProvider("google");
-                          setActiveModelId("gemini-3.1-pro-preview");
-                          setUseThinking(true);
-                          setIsModelDropdownOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                          activeProvider === "google" && useThinking
-                            ? "bg-purple-500/10 text-purple-400 border border-purple-500/10"
-                            : "text-zinc-400 hover:text-white hover:bg-white/[0.02] border border-transparent"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${activeProvider === "google" && useThinking ? "bg-purple-400" : "bg-transparent"}`} />
-                          <span>Gemini 3.1 Pro (Thinking)</span>
-                        </div>
-                        <span className="text-[9px] text-zinc-600 font-mono">GOOGLE</span>
-                      </button>
+                        const getModelClasses = () => {
+                          const base = 'w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all';
+                          
+                          if (activeProvider === 'google') {
+                            return `${base} ${isSelected ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20' : 'text-zinc-400 hover:text-zinc-300 hover:bg-white/[0.02] border border-transparent'}`;
+                          } else if (activeProvider === 'anthropic') {
+                            return `${base} ${isSelected ? 'bg-amber-500/15 text-amber-300 border border-amber-500/20' : 'text-zinc-400 hover:text-zinc-300 hover:bg-white/[0.02] border border-transparent'}`;
+                          } else {
+                            return `${base} ${isSelected ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20' : 'text-zinc-400 hover:text-zinc-300 hover:bg-white/[0.02] border border-transparent'}`;
+                          }
+                        };
 
-                      <button
-                        onClick={() => {
-                          setActiveProvider("anthropic");
-                          setActiveModelId("claude-3-7-sonnet");
-                          setUseThinking(false);
-                          setIsModelDropdownOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                          activeProvider === "anthropic"
-                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/10"
-                            : "text-zinc-400 hover:text-white hover:bg-white/[0.02] border border-transparent"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${activeProvider === "anthropic" ? "bg-amber-400" : "bg-transparent"}`} />
-                          <span>Claude 3.7 Sonnet</span>
-                        </div>
-                        <span className="text-[9px] text-zinc-600 font-mono">BYOK</span>
-                      </button>
+                        const getDotClasses = () => {
+                          if (activeProvider === 'google') {
+                            return isSelected ? 'bg-indigo-400' : 'bg-transparent';
+                          } else if (activeProvider === 'anthropic') {
+                            return isSelected ? 'bg-amber-400' : 'bg-transparent';
+                          } else {
+                            return isSelected ? 'bg-emerald-400' : 'bg-transparent';
+                          }
+                        };
 
-                      <button
-                        onClick={() => {
-                          setActiveProvider("openai");
-                          setActiveModelId("gpt-4o");
-                          setUseThinking(false);
-                          setIsModelDropdownOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
-                          activeProvider === "openai"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/10"
-                            : "text-zinc-400 hover:text-white hover:bg-white/[0.02] border border-transparent"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${activeProvider === "openai" ? "bg-emerald-400" : "bg-transparent"}`} />
-                          <span>GPT-4o</span>
+                        return (
+                          <button
+                            key={model.id}
+                            onClick={() => {
+                              setActiveModelId(model.id);
+                              if (model.supportsThinking) {
+                                setUseThinking(false);
+                              }
+                              setIsModelDropdownOpen(false);
+                            }}
+                            className={getModelClasses()}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className={`w-1.5 h-1.5 rounded-full ${getDotClasses()}`} />
+                              <div className="text-left">
+                                <div>{model.name}</div>
+                                {model.capabilities && (
+                                  <div className="text-[9px] text-zinc-600">
+                                    {model.capabilities.join(' • ')}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <span className={`text-[9px] font-mono opacity-60 ${isSelected ? 'opacity-100' : ''}`}>
+                              {Math.round(model.contextWindow / 1000)}K
+                            </span>
+                          </button>
+                        );
+                      })}
+
+                      {/* Thinking Mode Toggle for Google */}
+                      {activeProvider === 'google' && (
+                        <div className="mt-3 pt-2 border-t border-white/[0.02]">
+                          <label className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/[0.02] cursor-pointer transition-all">
+                            <input
+                              type="checkbox"
+                              checked={useThinking}
+                              onChange={(e) => {
+                                setUseThinking(e.target.checked);
+                                if (e.target.checked) {
+                                  setActiveModelId("gemini-3.1-pro-preview");
+                                } else {
+                                  setActiveModelId("gemini-3.5-flash");
+                                }
+                              }}
+                              className="w-3.5 h-3.5 rounded border-zinc-600 text-indigo-500 focus:ring-0 cursor-pointer"
+                            />
+                            <span className="text-xs text-zinc-300 font-medium">Extended Thinking</span>
+                            <span className="text-[9px] text-zinc-600 ml-auto">Slow but Deep</span>
+                          </label>
                         </div>
-                        <span className="text-[9px] text-zinc-600 font-mono">BYOK</span>
-                      </button>
+                      )}
                     </div>
                   </div>
                 </>
