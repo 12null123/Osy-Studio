@@ -134,7 +134,144 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 2. OpenAI & Anthropic BYOK Stateless Proxy Streaming
+    // 2. OpenRouter BYOK with Strict Model Whitelist
+    if (provider === "openrouter") {
+      // Strict whitelist of allowed free programming models
+      const OPENROUTER_WHITELIST = [
+        "qwen/qwen3-coder-480b-a35b:free",
+        "deepseek/deepseek-r1:free",
+        "deepseek/deepseek-v4-flash:free",
+        "google/gemma-4-31b:free",
+        "cohere/north-mini-code:free"
+      ];
+
+      const modelId = bodyModelId || "qwen/qwen3-coder-480b-a35b:free";
+
+      // Enforce Model Restrictions
+      if (!OPENROUTER_WHITELIST.includes(modelId)) {
+        return NextResponse.json(
+          { error: `Unauthorized model "${modelId}". You can only use the 5 allowed free OpenRouter models.` },
+          { status: 403 }
+        );
+      }
+
+      if (!userApiKey) {
+        return NextResponse.json(
+          { 
+            error: "OpenRouter API Key is missing. Please provide your OpenRouter BYOK key in Settings.",
+            isKeyMissing: true 
+          },
+          { status: 400 }
+        );
+      }
+
+      // Format messages for OpenRouter
+      const openRouterMsgs = messages.map((m: any) => ({
+        role: m.role || "user",
+        content: m.content || ""
+      }));
+
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${userApiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": req.headers.get("host") || "http://localhost:3000",
+          "X-Title": "Osy Studio - AI Chat"
+        },
+        body: JSON.stringify({
+          model: modelId,
+          messages: openRouterMsgs,
+          stream: true
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let parsedError = errorText;
+        try {
+          const parsed = JSON.parse(errorText);
+          parsedError = parsed.error?.message || (typeof parsed.error === 'object' ? JSON.stringify(parsed.error) : parsed.error) || errorText;
+        } catch {}
+
+        if (response.status === 429) {
+          return NextResponse.json(
+            { error: "OpenRouter Quota Exceeded. Your API key has insufficient credits or hit rate limits." },
+            { status: 429 }
+          );
+        }
+
+        return NextResponse.json(
+          { error: `OpenRouter API Error: ${parsedError}` },
+          { status: response.status }
+        );
+      }
+
+      if (!response.body) {
+        return NextResponse.json(
+          { error: "No response body returned from OpenRouter." },
+          { status: 500 }
+        );
+      }
+
+      const encoder = new TextEncoder();
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      const stream = new ReadableStream({
+        async start(controller) {
+          let buffer = "";
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split("\n");
+              buffer = lines.pop() || "";
+
+              for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+
+                if (trimmed.startsWith("data: ")) {
+                  const dataStr = trimmed.slice(6).trim();
+                  if (dataStr === "[DONE]") continue;
+
+                  try {
+                    const parsed = JSON.parse(dataStr);
+                    const text = parsed.choices?.[0]?.delta?.content || "";
+
+                    if (text) {
+                      const outData = JSON.stringify({ text });
+                      controller.enqueue(encoder.encode(`data: ${outData}\n\n`));
+                    }
+                  } catch (e) {
+                    // Ignore parse errors of incomplete chunks
+                  }
+                }
+              }
+            }
+            controller.close();
+          } catch (err: any) {
+            console.error("OpenRouter stream error:", err);
+            const outData = JSON.stringify({ error: err.message || "Streaming error" });
+            controller.enqueue(encoder.encode(`data: ${outData}\n\n`));
+            controller.close();
+          }
+        }
+      });
+
+      return new Response(stream, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache, no-transform",
+          "Connection": "keep-alive",
+        },
+      });
+    }
+
+    // 3. OpenAI & Anthropic BYOK Stateless Proxy Streaming
     if (!userApiKey) {
       return NextResponse.json(
         { 

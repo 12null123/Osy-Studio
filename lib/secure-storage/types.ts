@@ -14,6 +14,7 @@ export enum StorageKey {
   GOOGLE_API_KEY = 'osy_key_google',
   ANTHROPIC_API_KEY = 'osy_key_anthropic',
   OPENAI_API_KEY = 'osy_key_openai',
+  OPENROUTER_API_KEY = 'osy_key_openrouter',
 
   // App state (non-sensitive)
   CONVERSATIONS = 'gemini_wrapper_chats',
@@ -26,12 +27,14 @@ export enum AIProvider {
   GOOGLE = 'google',
   ANTHROPIC = 'anthropic',
   OPENAI = 'openai',
+  OPENROUTER = 'openrouter',
 }
 
 export const PROVIDER_TO_KEY: Record<AIProvider, StorageKey> = {
   [AIProvider.GOOGLE]: StorageKey.GOOGLE_API_KEY,
   [AIProvider.ANTHROPIC]: StorageKey.ANTHROPIC_API_KEY,
   [AIProvider.OPENAI]: StorageKey.OPENAI_API_KEY,
+  [AIProvider.OPENROUTER]: StorageKey.OPENROUTER_API_KEY,
 };
 
 /**
@@ -41,4 +44,5 @@ export const SENSITIVE_KEYS = new Set([
   StorageKey.GOOGLE_API_KEY,
   StorageKey.ANTHROPIC_API_KEY,
   StorageKey.OPENAI_API_KEY,
+  StorageKey.OPENROUTER_API_KEY,
 ]);

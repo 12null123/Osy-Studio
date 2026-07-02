@@ -1,4 +1,4 @@
-export type AIProvider = 'google' | 'anthropic' | 'openai';
+export type AIProvider = 'google' | 'anthropic' | 'openai' | 'openrouter';
 
 export interface ModelConfig {
   id: string;
@@ -113,6 +113,59 @@ export const SUPPORTED_MODELS: ModelConfig[] = [
     provider: 'openai', 
     contextWindow: 128000,
     capabilities: ['Fast'],
+    supportsThinking: false,
+    byokRequired: true
+  },
+  // OpenRouter Free Models
+  {
+    id: 'qwen/qwen3-coder-480b-a35b:free',
+    name: 'Qwen3 Coder 480B (Free)',
+    provider: 'openrouter',
+    contextWindow: 32000,
+    capabilities: ['Coding', 'Fast'],
+    supportsThinking: false,
+    byokRequired: true
+  },
+  {
+    id: 'deepseek/deepseek-r1:free',
+    name: 'DeepSeek R1 (Free)',
+    provider: 'openrouter',
+    contextWindow: 32000,
+    capabilities: ['Reasoning', 'Debug'],
+    supportsThinking: false,
+    byokRequired: true
+  },
+  {
+    id: 'deepseek/deepseek-v4-flash:free',
+    name: 'DeepSeek V4 Flash (Free)',
+    provider: 'openrouter',
+   ,
+  openrouter: {
+    name: 'OpenRouter',
+    color: 'purple',
+    lightColor: 'purple-400',
+    description: 'Free programming models',
+    models: SUPPORTED_MODELS.filter(m => m.provider === 'openrouter')
+  } contextWindow: 32000,
+    capabilities: ['Fast', 'General'],
+    supportsThinking: false,
+    byokRequired: true
+  },
+  {
+    id: 'google/gemma-4-31b:free',
+    name: 'Gemma 4 31B (Free)',
+    provider: 'openrouter',
+    contextWindow: 32000,
+    capabilities: ['Docs', 'General'],
+    supportsThinking: false,
+    byokRequired: true
+  },
+  {
+    id: 'cohere/north-mini-code:free',
+    name: 'North Mini Code (Free)',
+    provider: 'openrouter',
+    contextWindow: 16000,
+    capabilities: ['CLI', 'Terminal'],
     supportsThinking: false,
     byokRequired: true
   }

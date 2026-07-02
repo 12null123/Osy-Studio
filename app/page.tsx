@@ -232,8 +232,9 @@ export default function Home() {
   const [clientApiKey, setClientApiKey] = useState<string>("");
   const [clientAnthropicKey, setClientAnthropicKey] = useState<string>("");
   const [clientOpenaiKey, setClientOpenaiKey] = useState<string>("");
+  const [clientOpenrouterKey, setClientOpenrouterKey] = useState<string>("");
 
-  const [activeProvider, setActiveProvider] = useState<"google" | "anthropic" | "openai">("google");
+  const [activeProvider, setActiveProvider] = useState<"google" | "anthropic" | "openai" | "openrouter">("google");
   const [activeModelId, setActiveModelId] = useState<string>("gemini-3.5-flash");
   const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
 
@@ -241,12 +242,13 @@ export default function Home() {
   const [tempGoogleKey, setTempGoogleKey] = useState("");
   const [tempAnthropicKey, setTempAnthropicKey] = useState("");
   const [tempOpenaiKey, setTempOpenaiKey] = useState("");
+  const [tempOpenrouterKey, setTempOpenrouterKey] = useState("");
   const [showKeyText, setShowKeyText] = useState(false);
 
   // Arena Mode state
   const [isArenaMode, setIsArenaMode] = useState(false);
-  const [arenaProviderA, setArenaProviderA] = useState<"google" | "anthropic" | "openai">("google");
-  const [arenaProviderB, setArenaProviderB] = useState<"google" | "anthropic" | "openai">("anthropic");
+  const [arenaProviderA, setArenaProviderA] = useState<"google" | "anthropic" | "openai" | "openrouter">("google");
+  const [arenaProviderB, setArenaProviderB] = useState<"google" | "anthropic" | "openai" | "openrouter">("anthropic");
   const [arenaResponseA, setArenaResponseA] = useState("");
   const [arenaResponseB, setArenaResponseB] = useState("");
   const [arenaStreamingA, setArenaStreamingA] = useState(false);
@@ -404,8 +406,9 @@ export default function Home() {
       setTempGoogleKey(clientApiKey);
       setTempAnthropicKey(clientAnthropicKey);
       setTempOpenaiKey(clientOpenaiKey);
+      setTempOpenrouterKey(clientOpenrouterKey);
     }
-  }, [isKeyModalOpen, clientApiKey, clientAnthropicKey, clientOpenaiKey]);
+  }, [isKeyModalOpen, clientApiKey, clientAnthropicKey, clientOpenaiKey, clientOpenrouterKey]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -471,6 +474,9 @@ export default function Home() {
         
         const openaiKey = await storageManager.getCredential(AIProvider.OPENAI);
         if (openaiKey) setClientOpenaiKey(openaiKey);
+        
+        const openrouterKey = await storageManager.getCredential(AIProvider.OPENROUTER);
+        if (openrouterKey) setClientOpenrouterKey(openrouterKey);
         
         // Load provider and model settings
         const provider = await storageManager.getAppState(StorageKey.ACTIVE_PROVIDER);
@@ -886,7 +892,9 @@ export default function Home() {
         ? (clientApiKey || undefined)
         : activeProvider === "anthropic"
         ? (clientAnthropicKey || undefined)
-        : (clientOpenaiKey || undefined);
+        : activeProvider === "openai"
+        ? (clientOpenaiKey || undefined)
+        : (clientOpenrouterKey || undefined);
 
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -1360,12 +1368,13 @@ export default function Home() {
 
                     {/* Providers Section */}
                     <div className="space-y-2 mb-3 pb-3 border-b border-white/[0.02]">
-                      {(['google', 'anthropic', 'openai'] as const).map((provider) => {
+                      {(['google', 'anthropic', 'openai', 'openrouter'] as const).map((provider) => {
                         const config = PROVIDER_CONFIG[provider];
                         const hasKey = 
                           provider === 'google' ? clientApiKey : 
                           provider === 'anthropic' ? clientAnthropicKey : 
-                          clientOpenaiKey;
+                          provider === 'openai' ? clientOpenaiKey :
+                          clientOpenrouterKey;
                         const isActive = activeProvider === provider;
                         
                         // Get static classes based on provider
@@ -1377,8 +1386,10 @@ export default function Home() {
                             return `${base} ${isActive ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04]'} ${disabledClass}`;
                           } else if (provider === 'anthropic') {
                             return `${base} ${isActive ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04]'} ${disabledClass}`;
-                          } else {
+                          } else if (provider === 'openai') {
                             return `${base} ${isActive ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04]'} ${disabledClass}`;
+                          } else {
+                            return `${base} ${isActive ? 'bg-purple-500/10 border-purple-500/30' : 'bg-white/[0.02] border-white/[0.04] hover:bg-white/[0.04]'} ${disabledClass}`;
                           }
                         };
 
@@ -1393,10 +1404,15 @@ export default function Home() {
                               dot: 'bg-amber-500',
                               text: isActive ? 'text-amber-300' : 'text-zinc-300'
                             };
-                          } else {
+                          } else if (provider === 'openai') {
                             return {
                               dot: 'bg-emerald-500',
                               text: isActive ? 'text-emerald-300' : 'text-zinc-300'
+                            };
+                          } else {
+                            return {
+                              dot: 'bg-purple-500',
+                              text: isActive ? 'text-purple-300' : 'text-zinc-300'
                             };
                           }
                         };
@@ -1732,9 +1748,13 @@ export default function Home() {
                             </div>
                           ) : m.content && m.content.startsWith("Error:") ? (
                             /* Premium structural console-style banner for error states */
-                            <div className="bg-zinc-900/40 border border-red-500/20 backdrop-blur-md rounded-xl p-4 text-xs text-zinc-400 max-w-xl mx-auto text-center font-mono leading-relaxed tracking-wide shadow-inner select-none animate-fade-in my-2">
-                              <span className="text-red-400 font-bold uppercase tracking-wider block mb-1">SYSTEM ALERT</span>
-                              {m.content.substring(6).trim()}
+                            <div className="bg-zinc-900/40 border border-red-500/20 backdrop-blur-md rounded-xl p-4 text-xs text-zinc-400 max-w-2xl font-mono leading-relaxed tracking-wide shadow-inner select-none animate-fade-in my-2">
+                              <div className="mb-2">
+                                <span className="text-red-400 font-bold uppercase tracking-wider">SYSTEM ALERT</span>
+                              </div>
+                              <div className="max-h-60 overflow-y-auto overflow-x-hidden rounded-lg p-3 bg-red-950/20 border border-red-500/10 text-red-300 break-all whitespace-pre-wrap text-left">
+                                {m.content.substring(6).trim()}
+                              </div>
                             </div>
                           ) : (
                             /* Render Markdown for Assistant */
@@ -2183,6 +2203,57 @@ export default function Home() {
                     </div>
                   );
                 })()}
+
+                {/* OpenRouter */}
+                {(() => {
+                  const hasKey = clientOpenrouterKey.length > 0;
+                  const isModified = tempOpenrouterKey !== clientOpenrouterKey && tempOpenrouterKey.trim() !== "";
+                  
+                  const getStatusColor = () => {
+                    if (isModified) return 'purple-600';
+                    if (hasKey) return 'purple-500/30';
+                    return 'white/5';
+                  };
+                  
+                  const getStatusBorder = () => {
+                    if (isModified) return 'border-purple-500/50';
+                    if (hasKey) return 'border-purple-500/20';
+                    return 'border-white/10';
+                  };
+                  
+                  return (
+                    <div className={`bg-${getStatusColor()} border ${getStatusBorder()} rounded-2xl p-4 transition-all`}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-purple-400" />
+                          <div>
+                            <h4 className="text-sm font-semibold text-purple-300">OpenRouter</h4>
+                            <p className="text-[10px] text-zinc-500">Free programming models</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {hasKey && <div className="w-1.5 h-1.5 rounded-full bg-green-500" />}
+                          <a
+                            href="https://openrouter.ai/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[9px] text-purple-400 hover:text-purple-300 transition-colors inline-flex items-center gap-1"
+                          >
+                            Get Key <ExternalLink size={8} />
+                          </a>
+                        </div>
+                      </div>
+                      <input
+                        type={showKeyText ? "text" : "password"}
+                        value={tempOpenrouterKey}
+                        onChange={(e) => setTempOpenrouterKey(e.target.value)}
+                        onBlur={(e) => setTempOpenrouterKey(e.target.value.trim())}
+                        placeholder="sk-or-..."
+                        className="w-full bg-[#070709]/50 border border-white/[0.08] focus:border-purple-500/50 focus:bg-white/[0.02] rounded-lg px-3 py-2 text-xs text-zinc-200 placeholder-zinc-600 outline-none font-mono transition-all"
+                      />
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Footer */}
@@ -2212,6 +2283,7 @@ export default function Home() {
                       setClientApiKey(tempGoogleKey.trim());
                       setClientAnthropicKey(tempAnthropicKey.trim());
                       setClientOpenaiKey(tempOpenaiKey.trim());
+                      setClientOpenrouterKey(tempOpenrouterKey.trim());
 
                       // Storage sync happens automatically via useEffect hooks
                       // but we explicitly sync here for immediate feedback
@@ -2232,6 +2304,12 @@ export default function Home() {
                           await storageManager.setCredential(AIProvider.OPENAI, tempOpenaiKey.trim());
                         } else {
                           await storageManager.removeCredential(AIProvider.OPENAI);
+                        }
+
+                        if (tempOpenrouterKey.trim()) {
+                          await storageManager.setCredential(AIProvider.OPENROUTER, tempOpenrouterKey.trim());
+                        } else {
+                          await storageManager.removeCredential(AIProvider.OPENROUTER);
                         }
                       } catch (error) {
                         console.error("[v0] Failed to save keys:", error);
