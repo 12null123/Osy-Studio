@@ -1095,7 +1095,7 @@ export default function Home() {
   };
 
   return (
-    <div id="app-root" className="flex h-screen w-screen overflow-hidden bg-[#070709] text-neutral-200 font-sans">
+    <div id="app-root" className="flex h-screen w-screen overflow-hidden bg-[#0a0a0c] text-neutral-200 font-sans">
       
       {/* 1. Collapsible Sidebar */}
       <AnimatePresence initial={false}>
@@ -1106,12 +1106,12 @@ export default function Home() {
             animate={{ width: isMobile ? "100%" : 288, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className={`flex-shrink-0 h-full bg-[#08080a]/98 border-r border-white/[0.04] backdrop-blur-2xl flex flex-col z-30 ${
+            className={`flex-shrink-0 h-full bg-[#070709] border-r border-zinc-900/60 backdrop-blur-2xl flex flex-col z-30 ${
               isMobile ? "absolute inset-y-0 left-0" : "relative"
             }`}
           >
             {/* Sidebar Header */}
-            <div className="h-16 px-5 flex items-center justify-between border-b border-white/[0.02]">
+            <div className="h-16 px-5 flex items-center justify-between border-b border-zinc-900/60">
               <div className="flex items-center gap-1.5 select-none">
                 <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-zinc-500 flex items-center gap-2">
                   <GeminiSpark className="w-3.5 h-3.5 text-zinc-500" mono={true} /> Gemini Workspace
@@ -1241,7 +1241,7 @@ export default function Home() {
             </div>
 
             {/* Sidebar Bottom Footer Info */}
-            <div className="p-3 border-t border-white/[0.02] bg-[#08080a] flex flex-col gap-2">
+            <div className="p-3 border-t border-zinc-900/60 bg-[#070709] flex flex-col gap-2">
               {!clientApiKey ? (
                 <div className="flex items-center justify-between px-3 py-2 border border-red-900/50 bg-red-950/15 text-red-400 text-[11px] font-medium rounded-lg select-none">
                   <span className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider">
@@ -1287,7 +1287,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/* 2. Main Chat Workspace */}
-      <div id="main-workspace" className="flex-1 flex flex-col h-full overflow-hidden relative bg-[#070709] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/10 via-zinc-950/20 to-[#070709]">
+      <div id="main-workspace" className="flex-1 flex flex-col h-full overflow-hidden relative bg-[#0a0a0c] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/10 via-[#0a0a0c] to-[#0a0a0c]">
         
         {/* Advanced Ambient Spotlight Gradients (Neon Nebula Glows) */}
         <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[140px] pointer-events-none select-none z-0" />
@@ -1306,7 +1306,7 @@ export default function Home() {
         )}
 
         {/* Workspace Top Header */}
-        <header className="h-16 px-6 flex items-center justify-between border-b border-white/[0.04] bg-[#08080a]/80 backdrop-blur-2xl z-20 select-none">
+        <header className="h-16 px-6 flex items-center justify-between border-b border-zinc-900/60 bg-[#0a0a0c]/85 backdrop-blur-2xl z-20 select-none">
           <div className="flex items-center gap-3">
             {/* Spacer for toggle if sidebar is closed */}
             {!isSidebarOpen && <div className="w-10 h-10" />}
@@ -1624,8 +1624,8 @@ export default function Home() {
         )}
 
         {/* Chat Scrolling Area - Only this scrolls */}
-        <main className="flex-1 overflow-y-auto min-h-0 pb-24 py-6 z-10 scrollbar-thin scrollbar-thumb-white/[0.02]">
-          <div className="max-w-2xl mx-auto w-full flex flex-col px-4 lg:px-8">
+        <main className="flex-1 overflow-y-auto min-h-0 py-6 z-10 scrollbar-thin scrollbar-thumb-white/[0.02]">
+          <div className="w-full max-w-[680px] mx-auto px-5 sm:px-6 flex flex-col">
             
             {/* If no active conversation or no messages, show Bento landing welcome page */}
             {!activeConversation || activeConversation.messages.length === 0 ? (
@@ -1683,7 +1683,7 @@ export default function Home() {
               </div>
             ) : (
               /* Message Thread List */
-              <div className="space-y-8 pb-32">
+              <div className="flex flex-col space-y-6 pb-28">
                 {activeConversation.messages.map((m) => {
                   const isUser = m.role === "user";
 
@@ -1855,11 +1855,11 @@ export default function Home() {
         </main>
 
         {/* Bottom Input Bar - Fixed at bottom, doesn't scroll */}
-        <div id="input-container" className="flex-shrink-0 bg-gradient-to-t from-[#070709] via-[#070709]/95 to-transparent pt-12 pb-6 z-10 border-t border-white/[0.04]">
-          <div className="max-w-2xl mx-auto w-full px-4 lg:px-8">
+        <div id="input-container" className="w-full flex-shrink-0 border-t border-zinc-900/60 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/95 to-transparent pt-6 pb-4 px-4 z-10">
+          <div className="w-full max-w-[680px] mx-auto">
             
             {/* Input Bar Card */}
-            <div className="bg-[#0c0c0f] border border-white/[0.04] rounded-2xl p-5 pb-4 flex flex-col gap-2 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_-8px_30px_rgba(0,0,0,0.5),_0_16px_40px_rgba(0,0,0,0.7)] hover:border-white/[0.07] focus-within:border-zinc-700/40 focus-within:ring-1 focus-within:ring-white/[0.01]">
+            <div className="bg-zinc-950/95 border border-zinc-800/80 rounded-xl p-3 pb-2 flex flex-col gap-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_14px_36px_rgba(0,0,0,0.45)] hover:border-zinc-700/80 focus-within:border-zinc-700 focus-within:ring-1 focus-within:ring-white/[0.02]">
               
               {/* Attached files preview container */}
               {attachedFiles.length > 0 && (
