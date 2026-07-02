@@ -139,14 +139,7 @@ export const SUPPORTED_MODELS: ModelConfig[] = [
     id: 'deepseek/deepseek-v4-flash:free',
     name: 'DeepSeek V4 Flash (Free)',
     provider: 'openrouter',
-   ,
-  openrouter: {
-    name: 'OpenRouter',
-    color: 'purple',
-    lightColor: 'purple-400',
-    description: 'Free programming models',
-    models: SUPPORTED_MODELS.filter(m => m.provider === 'openrouter')
-  } contextWindow: 32000,
+    contextWindow: 32000,
     capabilities: ['Fast', 'General'],
     supportsThinking: false,
     byokRequired: true
@@ -192,5 +185,12 @@ export const PROVIDER_CONFIG: Record<AIProvider, ProviderConfig> = {
     lightColor: 'emerald-400',
     description: 'Powerful and multimodal',
     models: SUPPORTED_MODELS.filter(m => m.provider === 'openai')
+  },
+  openrouter: {
+    name: 'OpenRouter',
+    color: 'purple',
+    lightColor: 'purple-400',
+    description: 'Free programming models',
+    models: SUPPORTED_MODELS.filter(m => m.provider === 'openrouter')
   }
 };
