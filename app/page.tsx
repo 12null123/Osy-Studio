@@ -1625,7 +1625,7 @@ export default function Home() {
 
         {/* Chat Scrolling Area - Only this scrolls */}
         <main className="flex-1 overflow-y-auto min-h-0 pb-24 py-6 z-10 scrollbar-thin scrollbar-thumb-white/[0.02]">
-          <div className="max-w-3xl mx-auto w-full flex flex-col px-6">
+          <div className="max-w-2xl mx-auto w-full flex flex-col px-4 lg:px-8">
             
             {/* If no active conversation or no messages, show Bento landing welcome page */}
             {!activeConversation || activeConversation.messages.length === 0 ? (
@@ -1773,6 +1773,8 @@ export default function Home() {
                                     h1: ({ children }) => <h1 className="text-lg font-bold mt-6 mb-2.5 text-white tracking-tight">{children}</h1>,
                                     h2: ({ children }) => <h2 className="text-md font-bold mt-5 mb-2 text-white tracking-tight">{children}</h2>,
                                     h3: ({ children }) => <h3 className="text-sm font-semibold mt-4 mb-1 text-white tracking-tight">{children}</h3>,
+                                    p: ({children}) => <p className="mb-3 last:mb-0 leading-relaxed text-[14px] text-zinc-100">{children}</p>,
+                                    pre: ({children}) => <div className="max-w-full my-4 overflow-x-auto">{children}</div>,
                                     a: ({ href, children }) => (
                                       <a href={href} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-350 hover:underline inline-flex items-center gap-0.5 font-bold transition-colors">
                                         {children} <ExternalLink size={9} />
