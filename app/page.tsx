@@ -2032,10 +2032,10 @@ export default function Home() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
               transition={{ type: "spring", duration: 0.4 }}
-              className="bg-[#0c0c0e]/95 border border-white/[0.04] rounded-3xl p-6 max-w-2xl w-full shadow-[0_24px_50px_rgba(0,0,0,0.8)] relative overflow-hidden backdrop-blur-2xl max-h-[85vh] overflow-y-auto"
+              className="bg-[#0c0c0e]/95 border border-white/[0.04] rounded-3xl p-6 max-w-2xl w-full shadow-[0_24px_50px_rgba(0,0,0,0.8)] relative overflow-hidden backdrop-blur-2xl max-h-[85vh] overflow-y-auto flex flex-col"
             >
               {/* Header */}
-              <div className="mb-6">
+              <div className="mb-6 flex-shrink-0">
                 <div className="flex items-start gap-3 mb-2">
                   <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-center justify-center text-indigo-400 flex-shrink-0">
                     <Key size={16} />
@@ -2048,6 +2048,9 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto min-h-0 mb-6">
 
               {/* Provider Cards */}
               <div className="grid grid-cols-1 gap-4 mb-6">
@@ -2255,9 +2258,10 @@ export default function Home() {
                   );
                 })()}
               </div>
+              </div>
 
               {/* Footer */}
-              <div className="border-t border-white/[0.05] pt-4">
+              <div className="border-t border-white/[0.05] pt-4 flex-shrink-0">
                 <div className="flex items-center justify-between mb-4">
                   <button
                     type="button"
