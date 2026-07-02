@@ -30,7 +30,8 @@ import {
   Upload,
   FileText,
   X,
-  Paperclip
+  Paperclip,
+  Eye
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import ReactMarkdown from "react-markdown";
@@ -1875,161 +1876,241 @@ export default function Home() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
               transition={{ type: "spring", duration: 0.4 }}
-              className="bg-[#0c0c0e]/95 border border-white/[0.04] rounded-3xl p-6 max-w-md w-full shadow-[0_24px_50px_rgba(0,0,0,0.8)] relative overflow-hidden backdrop-blur-2xl"
+              className="bg-[#0c0c0e]/95 border border-white/[0.04] rounded-3xl p-6 max-w-2xl w-full shadow-[0_24px_50px_rgba(0,0,0,0.8)] relative overflow-hidden backdrop-blur-2xl max-h-[85vh] overflow-y-auto"
             >
-              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
-              
-              <div className="flex items-start gap-4 mb-5">
-                <div className="w-10 h-10 rounded-full bg-white/[0.02] border border-white/[0.03] flex items-center justify-center text-indigo-400 flex-shrink-0 shadow-inner">
-                  <Key size={18} />
-                </div>
-                <div>
-                  <h3 className="text-md font-bold text-white tracking-tight">Encryption Key Vault</h3>
-                  <p className="text-[11px] text-neutral-500 mt-1 leading-relaxed font-medium">
-                    Keys are encrypted locally and stored in your browser&apos;s localStorage. They never touch our servers and are sent directly to API endpoints.
-                  </p>
+              {/* Header */}
+              <div className="mb-6">
+                <div className="flex items-start gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-center justify-center text-indigo-400 flex-shrink-0">
+                    <Key size={16} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white tracking-tight">Manage API Keys</h3>
+                    <p className="text-[11px] text-zinc-500 mt-0.5">
+                      Keys are encrypted locally in your browser and never sent to our servers
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                {/* Google Gemini Key */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center">
-                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">
-                      Google Gemini Key
-                    </label>
-                    <a
-                      href="https://aistudio.google.com/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[9px] text-indigo-400 hover:underline inline-flex items-center gap-0.5"
-                    >
-                      Get Key <ExternalLink size={7} />
-                    </a>
-                  </div>
-                  <div className="relative flex items-center">
-                    <input
-                      type={showKeyText ? "text" : "password"}
-                      value={tempGoogleKey}
-                      onChange={(e) => setTempGoogleKey(e.target.value)}
-                      placeholder={clientApiKey ? "••••••••••••••••" : "AIzaSy..."}
-                      className="w-full bg-[#070709]/80 border border-white/[0.04] focus:border-indigo-500/50 rounded-xl px-3 py-2.5 text-xs text-neutral-200 placeholder-neutral-700 outline-none pr-12 font-mono transition-all"
-                    />
-                  </div>
-                </div>
+              {/* Provider Cards */}
+              <div className="grid grid-cols-1 gap-4 mb-6">
+                {/* Google */}
+                {(() => {
+                  const hasKey = clientApiKey.length > 0;
+                  const isModified = tempGoogleKey !== clientApiKey && tempGoogleKey.trim() !== "";
+                  
+                  const getStatusColor = () => {
+                    if (isModified) return 'indigo-600';
+                    if (hasKey) return 'indigo-500/30';
+                    return 'white/5';
+                  };
+                  
+                  const getStatusBorder = () => {
+                    if (isModified) return 'border-indigo-500/50';
+                    if (hasKey) return 'border-indigo-500/20';
+                    return 'border-white/10';
+                  };
+                  
+                  return (
+                    <div className={`bg-${getStatusColor()} border ${getStatusBorder()} rounded-2xl p-4 transition-all`}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-indigo-400" />
+                          <div>
+                            <h4 className="text-sm font-semibold text-indigo-300">Google Gemini</h4>
+                            <p className="text-[10px] text-zinc-500">Fast & versatile models</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {hasKey && <div className="w-1.5 h-1.5 rounded-full bg-green-500" />}
+                          <a
+                            href="https://aistudio.google.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[9px] text-indigo-400 hover:text-indigo-300 transition-colors inline-flex items-center gap-1"
+                          >
+                            Get Key <ExternalLink size={8} />
+                          </a>
+                        </div>
+                      </div>
+                      <input
+                        type={showKeyText ? "text" : "password"}
+                        value={tempGoogleKey}
+                        onChange={(e) => setTempGoogleKey(e.target.value)}
+                        onBlur={(e) => setTempGoogleKey(e.target.value.trim())}
+                        placeholder="AIzaSy..."
+                        className="w-full bg-[#070709]/50 border border-white/[0.08] focus:border-indigo-500/50 focus:bg-white/[0.02] rounded-lg px-3 py-2 text-xs text-zinc-200 placeholder-zinc-600 outline-none font-mono transition-all"
+                      />
+                    </div>
+                  );
+                })()}
 
-                {/* Anthropic Claude Key */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center">
-                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">
-                      Anthropic Claude Key (BYOK)
-                    </label>
-                    <a
-                      href="https://console.anthropic.com/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[9px] text-amber-400 hover:underline inline-flex items-center gap-0.5"
-                    >
-                      Get Key <ExternalLink size={7} />
-                    </a>
-                  </div>
-                  <div className="relative flex items-center">
-                    <input
-                      type={showKeyText ? "text" : "password"}
-                      value={tempAnthropicKey}
-                      onChange={(e) => setTempAnthropicKey(e.target.value)}
-                      placeholder={clientAnthropicKey ? "••••••••••••••••" : "sk-ant-..."}
-                      className="w-full bg-[#070709]/80 border border-white/[0.04] focus:border-amber-500/50 rounded-xl px-3 py-2.5 text-xs text-neutral-200 placeholder-neutral-700 outline-none pr-12 font-mono transition-all"
-                    />
-                  </div>
-                </div>
+                {/* Anthropic */}
+                {(() => {
+                  const hasKey = clientAnthropicKey.length > 0;
+                  const isModified = tempAnthropicKey !== clientAnthropicKey && tempAnthropicKey.trim() !== "";
+                  
+                  const getStatusColor = () => {
+                    if (isModified) return 'amber-600';
+                    if (hasKey) return 'amber-500/30';
+                    return 'white/5';
+                  };
+                  
+                  const getStatusBorder = () => {
+                    if (isModified) return 'border-amber-500/50';
+                    if (hasKey) return 'border-amber-500/20';
+                    return 'border-white/10';
+                  };
+                  
+                  return (
+                    <div className={`bg-${getStatusColor()} border ${getStatusBorder()} rounded-2xl p-4 transition-all`}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-amber-400" />
+                          <div>
+                            <h4 className="text-sm font-semibold text-amber-300">Anthropic Claude</h4>
+                            <p className="text-[10px] text-zinc-500">Thoughtful reasoning (BYOK)</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {hasKey && <div className="w-1.5 h-1.5 rounded-full bg-green-500" />}
+                          <a
+                            href="https://console.anthropic.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[9px] text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1"
+                          >
+                            Get Key <ExternalLink size={8} />
+                          </a>
+                        </div>
+                      </div>
+                      <input
+                        type={showKeyText ? "text" : "password"}
+                        value={tempAnthropicKey}
+                        onChange={(e) => setTempAnthropicKey(e.target.value)}
+                        onBlur={(e) => setTempAnthropicKey(e.target.value.trim())}
+                        placeholder="sk-ant-..."
+                        className="w-full bg-[#070709]/50 border border-white/[0.08] focus:border-amber-500/50 focus:bg-white/[0.02] rounded-lg px-3 py-2 text-xs text-zinc-200 placeholder-zinc-600 outline-none font-mono transition-all"
+                      />
+                    </div>
+                  );
+                })()}
 
-                {/* OpenAI GPT Key */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center">
-                    <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">
-                      OpenAI GPT Key (BYOK)
-                    </label>
-                    <a
-                      href="https://platform.openai.com/api-keys"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[9px] text-emerald-400 hover:underline inline-flex items-center gap-0.5"
-                    >
-                      Get Key <ExternalLink size={7} />
-                    </a>
-                  </div>
-                  <div className="relative flex items-center">
-                    <input
-                      type={showKeyText ? "text" : "password"}
-                      value={tempOpenaiKey}
-                      onChange={(e) => setTempOpenaiKey(e.target.value)}
-                      placeholder={clientOpenaiKey ? "••••••••••••••••" : "sk-..."}
-                      className="w-full bg-[#070709]/80 border border-white/[0.04] focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-xs text-neutral-200 placeholder-neutral-700 outline-none pr-12 font-mono transition-all"
-                    />
-                  </div>
-                </div>
+                {/* OpenAI */}
+                {(() => {
+                  const hasKey = clientOpenaiKey.length > 0;
+                  const isModified = tempOpenaiKey !== clientOpenaiKey && tempOpenaiKey.trim() !== "";
+                  
+                  const getStatusColor = () => {
+                    if (isModified) return 'emerald-600';
+                    if (hasKey) return 'emerald-500/30';
+                    return 'white/5';
+                  };
+                  
+                  const getStatusBorder = () => {
+                    if (isModified) return 'border-emerald-500/50';
+                    if (hasKey) return 'border-emerald-500/20';
+                    return 'border-white/10';
+                  };
+                  
+                  return (
+                    <div className={`bg-${getStatusColor()} border ${getStatusBorder()} rounded-2xl p-4 transition-all`}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                          <div>
+                            <h4 className="text-sm font-semibold text-emerald-300">OpenAI GPT</h4>
+                            <p className="text-[10px] text-zinc-500">Powerful & multimodal (BYOK)</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {hasKey && <div className="w-1.5 h-1.5 rounded-full bg-green-500" />}
+                          <a
+                            href="https://platform.openai.com/api-keys"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[9px] text-emerald-400 hover:text-emerald-300 transition-colors inline-flex items-center gap-1"
+                          >
+                            Get Key <ExternalLink size={8} />
+                          </a>
+                        </div>
+                      </div>
+                      <input
+                        type={showKeyText ? "text" : "password"}
+                        value={tempOpenaiKey}
+                        onChange={(e) => setTempOpenaiKey(e.target.value)}
+                        onBlur={(e) => setTempOpenaiKey(e.target.value.trim())}
+                        placeholder="sk-..."
+                        className="w-full bg-[#070709]/50 border border-white/[0.08] focus:border-emerald-500/50 focus:bg-white/[0.02] rounded-lg px-3 py-2 text-xs text-zinc-200 placeholder-zinc-600 outline-none font-mono transition-all"
+                      />
+                    </div>
+                  );
+                })()}
+              </div>
 
-                <div className="flex items-center justify-between px-1 pt-1">
+              {/* Footer */}
+              <div className="border-t border-white/[0.05] pt-4">
+                <div className="flex items-center justify-between mb-4">
                   <button
                     type="button"
                     onClick={() => setShowKeyText(!showKeyText)}
-                    className="text-neutral-500 hover:text-neutral-200 text-[9px] font-bold tracking-wider uppercase flex items-center gap-1"
+                    className="text-zinc-500 hover:text-zinc-300 text-[9px] font-bold tracking-wider uppercase flex items-center gap-1.5 transition-colors"
                   >
-                    <span>Visibility:</span>
-                    <span className="text-zinc-400">{showKeyText ? "Revealed" : "Masked"}</span>
+                    <Eye size={12} />
+                    <span>{showKeyText ? "Hide Keys" : "Show Keys"}</span>
                   </button>
-                  <span className="text-[9px] text-neutral-500 font-mono">Secure Local Storage</span>
+                  <span className="text-[9px] text-zinc-600 font-mono">🔐 Encrypted locally</span>
                 </div>
-              </div>
 
-              <div className="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-white/[0.02]">
-                <button
-                  onClick={() => setIsKeyModalOpen(false)}
-                  className="px-4 py-2 text-xs font-bold text-neutral-500 hover:text-white transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={async () => {
-                    // Update state first
-                    setClientApiKey(tempGoogleKey.trim());
-                    setClientAnthropicKey(tempAnthropicKey.trim());
-                    setClientOpenaiKey(tempOpenaiKey.trim());
+                <div className="flex items-center justify-end gap-3">
+                  <button
+                    onClick={() => setIsKeyModalOpen(false)}
+                    className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={async () => {
+                      // Update state first
+                      setClientApiKey(tempGoogleKey.trim());
+                      setClientAnthropicKey(tempAnthropicKey.trim());
+                      setClientOpenaiKey(tempOpenaiKey.trim());
 
-                    // Storage sync happens automatically via useEffect hooks
-                    // but we explicitly sync here for immediate feedback
-                    try {
-                      if (tempGoogleKey.trim()) {
-                        await storageManager.setCredential(AIProvider.GOOGLE, tempGoogleKey.trim());
-                      } else {
-                        await storageManager.removeCredential(AIProvider.GOOGLE);
+                      // Storage sync happens automatically via useEffect hooks
+                      // but we explicitly sync here for immediate feedback
+                      try {
+                        if (tempGoogleKey.trim()) {
+                          await storageManager.setCredential(AIProvider.GOOGLE, tempGoogleKey.trim());
+                        } else {
+                          await storageManager.removeCredential(AIProvider.GOOGLE);
+                        }
+
+                        if (tempAnthropicKey.trim()) {
+                          await storageManager.setCredential(AIProvider.ANTHROPIC, tempAnthropicKey.trim());
+                        } else {
+                          await storageManager.removeCredential(AIProvider.ANTHROPIC);
+                        }
+
+                        if (tempOpenaiKey.trim()) {
+                          await storageManager.setCredential(AIProvider.OPENAI, tempOpenaiKey.trim());
+                        } else {
+                          await storageManager.removeCredential(AIProvider.OPENAI);
+                        }
+                      } catch (error) {
+                        console.error("[v0] Failed to save keys:", error);
+                        showNotification("Failed to save vault", "error");
+                        return;
                       }
 
-                      if (tempAnthropicKey.trim()) {
-                        await storageManager.setCredential(AIProvider.ANTHROPIC, tempAnthropicKey.trim());
-                      } else {
-                        await storageManager.removeCredential(AIProvider.ANTHROPIC);
-                      }
-
-                      if (tempOpenaiKey.trim()) {
-                        await storageManager.setCredential(AIProvider.OPENAI, tempOpenaiKey.trim());
-                      } else {
-                        await storageManager.removeCredential(AIProvider.OPENAI);
-                      }
-                    } catch (error) {
-                      console.error("[v0] Failed to save keys:", error);
-                      showNotification("Failed to save vault", "error");
-                      return;
-                    }
-
-                    setIsKeyModalOpen(false);
-                    showNotification("Vault saved securely!", "success");
-                  }}
-                  className="px-5 py-2 bg-white hover:bg-neutral-100 text-[#070709] font-bold text-xs rounded-xl transition-all shadow-md active:scale-95"
-                >
-                  Save Vault
-                </button>
+                      setIsKeyModalOpen(false);
+                      showNotification("Vault saved securely!", "success");
+                    }}
+                    className="px-5 py-2 bg-white hover:bg-gray-100 text-zinc-900 font-bold text-xs rounded-lg transition-all shadow-md active:scale-95"
+                  >
+                    Save Keys
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
