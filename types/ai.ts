@@ -127,10 +127,10 @@ export const SUPPORTED_MODELS: ModelConfig[] = [
     byokRequired: true
   },
   {
-    id: 'nvidia/nemotron-3-ultra:free',
+    id: 'nvidia/nemotron-3-ultra-550b-a55b:free',
     name: 'NVIDIA: Nemotron 3 Ultra (Free)',
     provider: 'openrouter',
-    contextWindow: 131072,
+    contextWindow: 1000000,
     capabilities: ['Reasoning', 'Programming', 'Finance'],
     supportsThinking: true,
     byokRequired: true

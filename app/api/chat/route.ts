@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
       // Strict whitelist of allowed free programming models (verified against production API)
       const OPENROUTER_WHITELIST = [
         "openrouter/free",
-        "nvidia/nemotron-3-ultra:free",
+        "nvidia/nemotron-3-ultra-550b-a55b:free",
         "poolside/laguna-m1:free",
         "deepseek/deepseek-r1:free",
         "nvidia/nemotron-3-super:free",
