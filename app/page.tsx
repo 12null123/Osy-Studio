@@ -1623,9 +1623,9 @@ export default function Home() {
           />
         )}
 
-        {/* Chat Scrolling Area */}
-        <main className="flex-1 overflow-y-auto py-6 z-10 scrollbar-thin scrollbar-thumb-white/[0.02]">
-          <div className="max-w-3xl mx-auto w-full h-full flex flex-col justify-between px-6">
+        {/* Chat Scrolling Area - Only this scrolls */}
+        <main className="flex-1 overflow-y-auto min-h-0 pb-24 py-6 z-10 scrollbar-thin scrollbar-thumb-white/[0.02]">
+          <div className="max-w-3xl mx-auto w-full flex flex-col px-6">
             
             {/* If no active conversation or no messages, show Bento landing welcome page */}
             {!activeConversation || activeConversation.messages.length === 0 ? (
@@ -1853,8 +1853,8 @@ export default function Home() {
           </div>
         </main>
 
-        {/* Bottom dock container for auto-expanding input box */}
-        <div id="input-container" className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#070709] via-[#070709]/95 to-transparent pt-12 pb-6 z-10">
+        {/* Bottom Input Bar - Fixed at bottom, doesn't scroll */}
+        <div id="input-container" className="flex-shrink-0 bg-gradient-to-t from-[#070709] via-[#070709]/95 to-transparent pt-12 pb-6 z-10 border-t border-white/[0.04]">
           <div className="max-w-3xl mx-auto w-full px-6">
             
             {/* Input Bar Card */}
