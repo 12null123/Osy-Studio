@@ -117,7 +117,7 @@ export const SUPPORTED_MODELS: ModelConfig[] = [
     byokRequired: true
   },
   // OpenRouter Free Models (verified against production API)
- { 
+  { 
     id: 'openrouter/free', 
     name: 'OpenRouter Free Auto-Router', 
     provider: 'openrouter', 
@@ -127,19 +127,19 @@ export const SUPPORTED_MODELS: ModelConfig[] = [
     byokRequired: true 
   },
   {
-    id: 'nvidia/nemotron-3-ultra-550b-a55b:free',
-    name: 'NVIDIA: Nemotron 3 Ultra (Free)',
+    id: 'nvidia/nemotron-4-340b-instruct:free',
+    name: 'NVIDIA: Nemotron 4 340B (Free)',
     provider: 'openrouter',
-    contextWindow: 1000000,
+    contextWindow: 4096,
     capabilities: ['Reasoning', 'Programming', 'Finance'],
-    supportsThinking: true,
+    supportsThinking: false,
     byokRequired: true
   },
   { 
-    id: 'nvidia/nemotron-3-super-120b-a12b:free', // Replaces broken slug to fix the "not a valid model ID" error
-    name: 'NVIDIA: Nemotron 3 Super (Free)', 
+    id: 'nvidia/nemotron-3-nano-30b-a3b:free', 
+    name: 'NVIDIA: Nemotron 3 Nano (Free)', 
     provider: 'openrouter', 
-    contextWindow: 1000000, 
+    contextWindow: 4096, 
     capabilities: ['Academia', 'General', 'Programming'], 
     supportsThinking: false, 
     byokRequired: true 
@@ -154,24 +154,15 @@ export const SUPPORTED_MODELS: ModelConfig[] = [
     byokRequired: true
   },
   { 
-    id: 'qwen/qwen3-coder-480b-a35b:free', // Re-verified exact full token architecture slug for Qwen
-    name: 'Qwen3 Coder (Free)', 
+    id: 'qwen/qwen-2.5-coder-32b-instruct:free', 
+    name: 'Qwen 2.5 Coder 32B (Free)', 
     provider: 'openrouter', 
     contextWindow: 32000, 
     capabilities: ['Coding', 'Fast'], 
     supportsThinking: false, 
     byokRequired: true 
-  },
-  { 
-    id: 'deepseek/deepseek-r1:free', 
-    name: 'DeepSeek R1 (Free)', 
-    provider: 'openrouter', 
-    contextWindow: 163840, 
-    capabilities: ['Reasoning', 'Debug', 'Deep-Thinking'], 
-    supportsThinking: true, 
-    byokRequired: true 
-  },
-];
+  }
+]
 
 export const PROVIDER_CONFIG: Record<AIProvider, ProviderConfig> = {
   google: {
