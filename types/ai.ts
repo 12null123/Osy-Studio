@@ -126,15 +126,15 @@ export const SUPPORTED_MODELS: ModelConfig[] = [
     supportsThinking: false, 
     byokRequired: true 
   },
-  {
-    id: 'nvidia/nemotron-4-340b-instruct:free',
-    name: 'NVIDIA: Nemotron 4 340B (Free)',
-    provider: 'openrouter',
-    contextWindow: 4096,
-    capabilities: ['Reasoning', 'Programming', 'Finance'],
-    supportsThinking: false,
-    byokRequired: true
-  },
+{
+  id: 'nvidia/nemotron-4-340b-instruct:free',
+  name: 'NVIDIA: Nemotron 4 340B (Free)',
+  provider: 'openrouter',
+  contextWindow: 4096,
+  capabilities: ['Reasoning', 'Programming', 'Finance'],
+  supportsThinking: false,
+  byokRequired: true
+},
   { 
     id: 'nvidia/nemotron-3-nano-30b-a3b:free', 
     name: 'NVIDIA: Nemotron 3 Nano (Free)', 
@@ -153,15 +153,15 @@ export const SUPPORTED_MODELS: ModelConfig[] = [
     supportsThinking: true,
     byokRequired: true
   },
-  { 
-    id: 'qwen/qwen-2.5-coder-32b-instruct:free', 
-    name: 'Qwen 2.5 Coder 32B (Free)', 
-    provider: 'openrouter', 
-    contextWindow: 32000, 
-    capabilities: ['Coding', 'Fast'], 
-    supportsThinking: false, 
-    byokRequired: true 
-  }
+{
+  id: 'qwen/qwen-2.5-coder-32b-instruct:free',
+  name: 'Qwen 2.5 Coder 32B (Free)',
+  provider: 'openrouter',
+  contextWindow: 32000,
+  capabilities: ['Coding', 'Fast'],
+  supportsThinking: false,
+  byokRequired: true
+},
 ]
 
 export const PROVIDER_CONFIG: Record<AIProvider, ProviderConfig> = {
