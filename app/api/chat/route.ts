@@ -223,8 +223,15 @@ export async function POST(req: NextRequest) {
 
                   try {
                     const parsed = JSON.parse(dataStr);
-                    const text = parsed.choices?.[0]?.delta?.content || "";
+                    
+                    // Direct processing of inline runtime errors matching OpenRouter stream specs
+                    if (parsed.error) {
+                      const outData = JSON.stringify({ error: parsed.error.message || "OpenRouter Stream Interruption" });
+                      controller.enqueue(encoder.encode(`data: ${outData}\n\n`));
+                      continue;
+                    }
 
+                    const text = parsed.choices?.[0]?.delta?.content || "";
                     if (text) {
                       const outData = JSON.stringify({ text });
                       controller.enqueue(encoder.encode(`data: ${outData}\n\n`));
